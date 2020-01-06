@@ -12,16 +12,20 @@
     <el-container>
       <!-- 侧边栏 -->
       <el-aside :width="isCollapse?'64px':'200px'">
-         <div class="toggle-button" @click="toggleCollapse">|||</div>
-         <el-menu
+        <div class="toggle-button" @click="toggleCollapse">|||</div>
+        <el-menu
       background-color="#323744"
       text-color="#fff"
       active-text-color="#359EFF"
       unique-opened :collapse="isCollapse"
       :collapse-transition="false"
-      router>
+      router
+      :default-active="activePath">
       <!-- 一级菜单 -->
-      <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
+      <el-submenu :index="item.id+''"
+      v-for="item in menuList"
+      :key="item.id"
+      @click="saveNavState('/'+subItem.path)">
         <!-- 一级菜单模板 -->
         <template slot="title">
           <!-- 图标 -->
@@ -29,6 +33,7 @@
           <!-- 文字 -->
           <span>{{item.authName}}</span>
         </template>
+        <!-- 二级菜单 -->
         <el-menu-item :index="'/'+subItem.path" v-for="subItem in item.children" :key="subItem.id">
           <template slot="title">
           <!-- 图标 -->
@@ -60,10 +65,14 @@ export default {
         '102': 'iconfont icon-danju',
         '145': 'iconfont icon-baobiao'
       },
-      isCollapse: false
+      isCollapse: false,
+      activePath: ''
     }
   },
-  created () { this.getMenuList() },
+  created () {
+    this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
+  },
   methods: {
     logout () {
       window.sessionStorage.clear()
@@ -78,6 +87,10 @@ export default {
     // 折叠菜单栏
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
+    },
+    saveNavState (path) {
+      window.sessionStorage.setItem('activePath', path)
+      this.activePath = path
     }
   }
 }
