@@ -4,9 +4,9 @@
 3.实现用户列表展示
 4.实现添加用户
 
-
-###1.后台首页基本布局
+### 1.后台首页基本布局
 打开Home.vue组件，进行布局：
+
 ```
 <el-container class="home-container">
   <!-- 头部区域 -->
@@ -37,7 +37,8 @@
 }
 ```
 
-###2.顶部布局，侧边栏布局
+### 2.顶部布局，侧边栏布局
+
 ```
 <template>
     <el-container class="home-container">
@@ -102,7 +103,8 @@ axios.interceptors.request.use(config=>{
 })
 ```
 
-###4.请求侧边栏数据
+### 4.请求侧边栏数据
+
 ```
 <script>
 export default {
@@ -347,6 +349,7 @@ export default {
 
 > slot,slot-scope**废弃****推荐 2.6.0 新增的 [v-slot](https://cn.vuejs.org/v2/api/#v-slot)。**用于将元素或组件表示为作用域插槽。特性的值应该是可以出现在函数签名的参数位置的合法的 JavaScript 表达式。这意味着在支持的环境中，你还可以在表达式中使用 ES2015 解构。它在 2.5.0+ 中替代了 [`scope`](https://cn.vuejs.org/v2/api/#scope-replaced)
 
+scope相当于一行的数据， scope.row相当于当前行的数据对象。这里就是用插槽 拿到当前行 row这个内置的属性 ，vue slot的scope传递值是父作用域中的源数据改变，值会同步改变。
 ### 12.实现用户列表分页
 A.使用表格来展示用户列表数据，可以使用分页组件完成列表分页展示数据(复制分页组件代码，在element.js中导入组件Pagination)
 B.更改组件中的绑定数据
