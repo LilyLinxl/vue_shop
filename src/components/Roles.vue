@@ -1,12 +1,15 @@
 <template>
   <div>
-    <h1>角色列表</h1>
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>权限管理</el-breadcrumb-item>
       <el-breadcrumb-item>角色列表</el-breadcrumb-item>
     </el-breadcrumb>
-    <el-table :data="rolesList" stripe>
+    <el-table row-key="id" :data="rolesList" stripe>
+      <!-- 添加展开列 -->
+      <el-table-column
+        type="expand">
+      </el-table-column>
       <el-table-column
         type="index">
       </el-table-column>
@@ -21,12 +24,12 @@
         >
       </el-table-column>
       <el-table-column
-        label="权限等级"
-        prop="level">
+        label="操作"
+        width="300px">
         <template v-slot="scope">
-            <el-tag v-if = "scope.row.level === 0">一级权限</el-tag>
-            <el-tag v-if = "scope.row.level === 1" type="success">二级权限</el-tag>
-            <el-tag v-if = "scope.row.level === 2" type="warning">三级权限</el-tag>
+            <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
+            <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+            <el-button size="mini" type="warning" icon="el-icon-setting">分配权限</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -44,10 +47,10 @@ export default {
     this.getRolesList()
   },
   methods: {
-    getRolesList () {
-      const { data: res } = this.$http.get('roles')
-      if (res.meta.status !== 200) return this.$message.error('权限获取失败')
-      this.$message.success('权限获取成功')
+    async getRolesList () {
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) return this.$message.error('角色获取失败')
+      this.$message.success('角色获取成功')
       this.rolesList = res.data
     }
   }

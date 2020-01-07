@@ -1,6 +1,5 @@
 <template>
 <div>
-  <h1>权限列表</h1>
   <el-breadcrumb separator="/">
     <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
     <el-breadcrumb-item>权限管理</el-breadcrumb-item>
@@ -25,9 +24,9 @@
         label="权限等级"
         prop="level">
         <template v-slot="scope">
-            <el-tag v-if = "scope.row.level === 0">一级权限</el-tag>
-            <el-tag v-if = "scope.row.level === 1" type="success">二级权限</el-tag>
-            <el-tag v-if = "scope.row.level === 2" type="warning">三级权限</el-tag>
+            <el-tag v-if="scope.row.level === '0'">一级权限</el-tag>
+            <el-tag v-if="scope.row.level === '1'" type="success">二级权限</el-tag>
+            <el-tag v-if="scope.row.level === '2'" type="warning">三级权限</el-tag>
         </template>
       </el-table-column>
     </el-table>
