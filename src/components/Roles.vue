@@ -94,7 +94,6 @@ export default {
       const { data: res } = await this.$http.get('roles')
       if (res.meta.status !== 200) return this.$message.error('权限获取失败')
       this.$message.success('权限获取成功')
-      console.log(res.data)
       this.rolesList = res.data
     },
     async removeRightById (role, rightId) {
