@@ -15,6 +15,7 @@
 A.为用户列表中的修改按钮绑定点击事件
 B.在页面中添加修改用户对话框，并修改对话框的属性
 C.根据id查询需要修改的用户数据
+
 ```
 //展示编辑用户的对话框
 async showEditDialog(id) {
@@ -299,15 +300,33 @@ export default {
     </template>
 </el-table-column>
 ```
+##### 1.疑问：?i1是什么
+我的想法：i1是当前渲染数据的索引。
+:class="['bdbottom',i1===0?'bdtop':'']
+的意思是渲染出来的多条数据中的第一项多一种样式“bdtop”其它项则没有 
+##### 2. bug:角色名称这里也有可以点开的按钮了，但是点开只会新增空白列
+
+![QQ图片20200108095319](D:\lxl\vue_shop\note\QQ图片20200108095319.png)
+
+去掉row-key="id"就可以了，但是row-key="id"又是必需的属性，而且这里的id到底指的是什么呢
+
+我的想法：这个id指的嵌套数据中的第一层数据的id
+
+应该就是指绑定数据的id
+
+如果children里面的键名和父对象里的一样的话就能渲染出数据，所以现在只能渲染出id，其它都是空的，那这个row-key="id" 是可以不加，因为在expand扩展列里可以实现展开嵌套数据的功能
+
 #### F.美化样式
+
 通过设置global.css中的#app样式min-width:1366px 解决三级权限换行的问题
 ，通过给一级权限el-row添加display:flex,align-items:center的方式解决一级权限垂直居中的问题，二级权限也类似添加，因为需要给多个内容添加，可以将这个样式设置为一个.vcenter{display:flex;align-items:center}
 
-####G.添加权限删除功能
-给每一个权限的el-tag添加closable属性，是的权限右侧出现“X”图标
+#### G.添加权限删除功能
+给每一个权限的el-tag添加closable属性，让权限右侧出现“X”图标
 再给el-tag添加绑定close事件处理函数removeRightById(scope.row,item1.id)
 removeRightById(scope.row,item2.id)
 removeRightById(scope.row,item3.id)
+
 ```
 async removeRightById(role,rightId){
     //弹窗提示用户是否要删除
@@ -318,7 +337,7 @@ async removeRightById(role,rightId){
     }).catch(err=>err)
     //如果用户点击确认，则confirmResult 为'confirm'
     //如果用户点击取消, 则confirmResult获取的就是catch的错误消息'cancel'
-    if(confirmResult != "confirm"){
+    if(confirmResult !== "confirm"){
         return this.$message.info("已经取消删除")
     }
 
@@ -336,10 +355,22 @@ async removeRightById(role,rightId){
 }
 ```
 
+##### 优化1-用模板字符串代替字符串拼接
+
+`roles/${role.id}/rights/${rightId}` 代替
+
+'roles/' + row.id + '/rights/' + rightId
+
+#####　优化２.对现有的角色权限进行更新而不用更新所有权限
+
+##### 3.谨记 删除操作要加一个确认删除的弹框
+
 #### H.完成权限分配功能
+
 先给分配权限按钮添加事件
 <el-button size="mini" type="warning" icon="el-icon-setting" @click="showSetRightDialog">分配权限</el-button>
 在showSetRightDialog函数中请求权限树数据并显示对话框
+
 ```
 async showSetRightDialog() {
     //当点击分配权限按钮时，展示对应的对话框
@@ -507,7 +538,12 @@ export default {
 </script>
 ```
 
+为什么要把按钮放在span标签里呢？还有footer这个作用域插槽有什么用 ```<span slot="footer" class="dialog-footer">```
+
+element-ui中的规则：插槽具名为footer的是Dialog 按钮操作区的内容
+
 ### 6.分配角色
+
 打开Users.vue，完成分配角色的功能
 A.添加分配角色对话框
 ```
