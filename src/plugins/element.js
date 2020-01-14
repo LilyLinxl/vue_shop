@@ -61,4 +61,4 @@ Vue.use(Select)
 Vue.use(Option)
 Vue.use(Cascader)
 Vue.prototype.$message = Message
-Vue.prototype.$confirm = MessageBox.confirms
+Vue.prototype.$confirm = MessageBox.confirm
