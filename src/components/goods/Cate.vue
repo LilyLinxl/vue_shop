@@ -243,11 +243,6 @@
 
 </script>
 <style lang="less" scoped>
-<<<<<<< HEAD
-.treeTable {
-  margin-top: 15px;
-}
-=======
   .treeTable {
     margin-top: 15px;
   }
@@ -255,7 +250,6 @@
   .el-cascader-panel {
     width: 100%;
   }
->>>>>>> b60ce11009e5aa04461685c3dc2d88ac80ef7c71
 
 .el-cascader-panel {
   width: 100%;
