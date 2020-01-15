@@ -27,7 +27,7 @@
         "eslint": "^5.16.0",
         "eslint-plugin-vue": "^5.0.0",
         "vue-cli-plugin-element": "^1.0.1",
-        "vue-template-compiler": "^2.6.10",
-        "vue-table-with-tree-grid": "^0.2.4"
+        "vue-table-with-tree-grid": "^0.2.4",
+        "vue-template-compiler": "^2.6.10"
     }
 }
