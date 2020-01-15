@@ -42,8 +42,24 @@
               </el-table-column>
             </el-table>
           </el-tab-pane>
-           <!-- 添加动态参数的面板 将标签页改为only-->
-  
+           <!-- 添加静态属性的面板 将标签页改为only-->
+            <el-tab-pane label="静态属性" name="only">
+                <el-button size="mini" type="primary" :diabled="isButtonDisabled">添加属性</el-button>
+                <!-- 静态属性表格 -->
+                <el-table :data="onlyTableData" border stripe>
+                    <!-- 展开行 -->
+                    <el-table-column type="expand"></el-table-column>
+                    <!-- 索引列 -->
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column label="属性名称" prop="attr_name"></el-table-column>
+                    <el-table-column label="操作">
+                        <template v-slot="scope">
+                            <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
+                            <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-tab-pane>
         </el-tabs>
     </div>
 </template>
@@ -59,26 +75,62 @@ export default {
         value:'cat_id',
         label:'cat_name',
         children:'children'
-      },
-      total:0
+        },
+      total:0,
+      activeName:'many',
+      manyTableData:[],
+      onlyTableData:[]
     }
+  },
+  created(){
+      this.getCateList()
   },
   methods:{
     async getCateList(){
       //获取所有的商品分类
-      const {data,res} = await this.$http.get('categories')
-      if(data.meta.status!==200){
+      const {data:res} = await this.$http.get('categories')
+      if(res.meta.status!==200){
         return this.$message.error('获取分类数据失败')
       }
       this.cateList = res.data
       this.total = res.data.total
     },
-    handleChange(){
+    async handleChange(){
       //当用户在级联菜单中选择内容改变时触发
       console.log(this.selectedCateKeys)
+      const {data:res} = await this.$http.get(
+          `categories/${this.cateId}/attributes`,
+          {params:{sel:this.activeName}}
+      )
+      if(res.meta.status !==200) {
+          return this.$message.error('获取参数列表数据失败')
+      }
+      if(this.activeName === "many"){
+          //获取的是动态参数
+          this.manyTableData = res.data
+      }else if(this.activeName==="only"){
+          //获取的静态属性
+          this.onlyTableData = res.data
+      }
+    },
+    handleTabClick(){
+      this.handleChange()
+    }
+  },
+    computed:{
+        //添加计算属性用来获取按钮禁用与否
+        isButtonDisabled() {
+            return this.selectedCateKeys.length!==3
+        },
+        //获取选中的三级分类
+        cateId(){
+            if(this.selectedCateKeys.length===3){
+                return this.selectedCateKeys[this.selectedCateKeys.length-1]
+            }
+            return null
+        }
     }
   }
-}
 </script>
 <style lang="less" scoped>
 
