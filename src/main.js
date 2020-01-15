@@ -11,15 +11,15 @@ import axios from 'axios'
 // 配置请求的跟路径
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 axios.interceptors.request.use(config => {
-    config.headers.Authorization = window.sessionStorage.getItem('token')
-    return config
+  config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config
 })
 Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
-    // 全局注册组件
+// 全局注册组件
 Vue.component('tree-table', TreeTable)
 new Vue({
-    router,
-    render: h => h(App)
+  router,
+  render: h => h(App)
 }).$mount('#app')
