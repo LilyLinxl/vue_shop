@@ -61,6 +61,20 @@
                 </el-table>
             </el-tab-pane>
         </el-tabs>
+        <el-dialog :title="'添加'+titleText" :visible.sync="addDialogVisible"
+        width="50%" @close="addDialogClosed">
+        <!-- 添加表单 -->
+          <el-form :model="addForm" rules="addFormRules" ref="addFormRef"
+          label-width="100px">
+              <el-form-item :label="titleText" prop="attr_name">
+                <el-input v-model="addForm.attr_name"></el-input>
+              </el-form-item>
+          </el-form>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="addDialogVisible=false">取消</el-button>
+            <el-button @click="addParams">确定</el-button>
+          </span>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -79,7 +93,15 @@ export default {
       total:0,
       activeName:'many',
       manyTableData:[],
-      onlyTableData:[]
+      onlyTableData:[],
+      titleText:'',
+      addDialogVisible:false,
+      addForm:{
+        attr_name:''
+      },
+      addFormRules:{
+        attr_name:[{required:true,message:'请输入名称',trigger:'blur'}]
+      }
     }
   },
   created(){
@@ -115,6 +137,11 @@ export default {
     },
     handleTabClick(){
       this.handleChange()
+    },
+    addParams(){
+      this.$refs.addFormRef.validate(async valid=>{
+        if(!valid) return
+      })
     }
   },
     computed:{
