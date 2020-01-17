@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h3>分类参数</h3>
         <!-- 面包屑导航 -->
         <el-breadcrumb separator="/"> 
         <el-breadcrumb-item :to="{path:'/home'}">首页</el-breadcrumb-item>
@@ -31,12 +30,26 @@
             <!-- 动态参数表格 -->
             <el-table :data="manyTableData" border stripe>
               <!-- 展开行 -->
-              <el-table-column type="expand"></el-table-column>
+              <el-table-column type="expand">
+                <template v-slot="scope">
+                  <!-- 循环生成的el-tag -->
+                  <el-tag v-for="(item,i) in scope.row.attr_vals" :key="i" closable
+                  @close="handleClose(i,scope.row)">{{item}}</el-tag>
+                  <!-- 输入框 -->
+                  <el-input class="input-new-tag" v-if="scope.row.inputVisible" v-model="scope.row.inputValue"
+                  ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)">
+                  </el-input>
+                  <!-- 添加按钮 -->
+                  <el-button v-else class="button-new-tag" size="small"
+                  @click="showInput(scope.row)">+New Tag</el-button>
+                </template>
+              </el-table-column>
               <el-table-column type="index"></el-table-column>
               <el-table-column label="参数名称" prop="attr_name"></el-table-column>
               <el-table-column label="操作">
                 <template v-slot="scope">
-                  <el-button size="mini" type="primary" icon="el-icon-edit" @click="showEditDialog(scope.row.cat_id)">编辑</el-button>
+                  <el-button size="mini" type="primary" icon="el-icon-edit" @click="showEditDialog(scope.row.attr_id)">编辑</el-button>
                   <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteParam(scope.row.attr_id)">删除</el-button>
                 </template>
               </el-table-column>
@@ -48,7 +61,19 @@
                 <!-- 静态属性表格 -->
                 <el-table :data="onlyTableData" border stripe>
                     <!-- 展开行 -->
-                    <el-table-column type="expand"></el-table-column>
+                    <el-table-column type="expand">
+                      <template v-slot="scope">
+                        <el-tag v-for="(item,i) in scope.row.attr_vals" :key="i" closable
+                        @close="handleClose(i,scope.row)">{{item}}</el-tag>
+
+                        <el-input class="input-new-tag" v-if="scope.row.inputVisible" v-model="scope.row.inputValue"
+                        ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm(scope.row)"
+                        @blur="handleInputConfirm(scope.row)"></el-input>
+
+                        <el-button v-else class="button-new-tag" size="small"
+                        @click="showInput(scope.row)">+New Tag</el-button>
+                      </template>
+                    </el-table-column>
                     <!-- 索引列 -->
                     <el-table-column type="index"></el-table-column>
                     <el-table-column label="属性名称" prop="attr_name"></el-table-column>
@@ -150,6 +175,11 @@ export default {
       if(res.meta.status !==200) {
           return this.$message.error('获取参数列表数据失败')
       }
+      res.data.forEach(item => {
+        item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') :[]
+        item.inputVisible = false
+        item.inputValue=''
+      })
       if(this.activeName === "many"){
           //获取的是动态参数
           this.manyTableData = res.data
@@ -160,6 +190,13 @@ export default {
 
     },
     handleChange(){
+      // 如果用户选择的不是三级分类,需要清空表格中数据
+      if(this.selectedCateKeys.length !== 3){
+        this.selectedCateKeys = []
+        this.manyTableData=[]
+        this.onlyTableData=[]
+        return
+      }
       //当用户在级联菜单中选择内容改变时触发
       this.getParamsData() 
      
@@ -197,9 +234,6 @@ export default {
       if(res.meta.status !== 200){
         return this.$message.error('获取参数数据失败')
       }
-        console.log(this.activeName)
-        console.log(attr_id)
-        console.log(res.data)
 
       this.editForm = res.data
       this.editDialogVisible = true
@@ -235,11 +269,54 @@ export default {
       const {data:res} = await this.$http.delete(
         `categories/${this.cateId}/attributes/${attr_id}`
       )
-       if (res.meta.status !== 200) {
+      if (res.meta.status !== 200) {
         return this.$message.error('删除参数数据失败')
       }
       this.$message.success('删除' + this.titleText + '数据成功')
       this.handleChange()
+    },
+    //最后对应文本框的事件和按钮的事件添加处理函数
+    handleInputConfirm(row){
+      //当用户在文本框中按下enter键或者焦点离开时都会触发执行
+      //判断用户在文本框中输入的内容是否合法
+      if(row.inputValue.trim().length===0){
+        row.inputValue = ''
+        row.inputVisible = false
+        return
+      }
+      //如果用户输入了真实合法的数据，需要保存起来
+      row.attr_vals.push(row.inputValue.trim())
+      row.inputValue = ''
+      row.inputVisible = false
+      this.saveAttrVals(row)
+    },
+    handleClose(index,row){
+       //删除对应索引的参数可选项
+      row.attr_vals.splice(index,1)
+       //调用函数，完成保存可选项的操作
+      this.saveAttrVals(row)
+    },
+    async saveAttrVals(row){
+      const {data:res} = await this.$http.put(
+        `categories/${this.cateId}/attributes/${row.attr_id}`,{
+          attr_name:row.attr_name,
+          attr_sel:row.attr_sel,
+          attr_vals:row.attr_vals.join(' ')
+        }
+      )
+      if(res.meta.status !== 200){
+        return this.$message.error('修改参数项失败')
+      }
+      this.$message.success('修改参数项成功')
+    },
+    showInput(row){
+      //用户点击添加按钮时触发
+      row.inputVisible = true
+      //$nextTick:在页面上元素被重新渲染之后，调用回调函数的代码
+      this.$nextTick(_=>{
+        //让文本框自动获得焦点
+        this.$refs.saveTagInput.focus()
+      })
     }
   },
     computed:{
@@ -264,5 +341,15 @@ export default {
   }
 </script>
 <style lang="less" scoped>
+.cat_opt {
+  margin: 15px 0;
+}
 
+.el-tag {
+  margin: 10px;
+}
+
+.input-new-tag {
+  width: 120px;
+}
 </style>
