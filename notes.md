@@ -13,19 +13,13 @@ _ => console.log('Not using any parameters');
 
 我了解变量_表示不在乎/不使用，但是由于它是唯一的变量，因此没有任何理由更喜欢使用_：
 
-
-
 () => console.log('Not using any parameters');
 
 当然，键入的字符数不能少于一个。在我看来，（）语法可以更好地传达意图，并且还更具体地说明类型，因为否则我认为第一个示例应该看起来像这样：
 
-
-
 (_: any) => console.log('Not using any parameters');
 
 万一重要，这是使用它的上下文：
-
-
 
 submit(query: string): void {
 

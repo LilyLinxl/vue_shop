@@ -18,3 +18,9 @@ body,
     display: flex;
     align-items: center;
 }
+.el-steps{
+    margin:15px 0;
+}
+.el-step__title{
+    font-size: 13px;
+}
