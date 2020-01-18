@@ -54,3 +54,19 @@ this.$refs.usernameInput.focus()
 当 ref 和 v-for 一起使用的时候，你得到的引用将会是一个包含了对应数据源的这些子组件的数组。
 
 **$refs 只会在组件渲染完成之后生效，并且它们不是响应式的。这仅作为一个用于直接操作子组件的“逃生舱”——你应该避免在模板或计算属性中访问 $refs。**
+
+6.Duplicate keys detected: 'tab-2'. This may cause an update error.
+el-tabs中有name相同的el-tab-pane
+
+7."TypeError: Cannot read property '$options' of undefined"
+解决方案同下
+8.Injection "elForm" not found
+未找到注入“elForm”
+我的错误原因是：直接写了el-form-item而没用 el-form包裹住
+found in
+9.Property or method "elForm" is not defined on the instance but referenced during render. Make sure that this property is reactive, either in the data option, or for class-based components, by initializing the property. 
+解决方案同上
+
+
+10.预览图片时，图片的尺寸能不能适应预览框的大小
+图片设置样式：width:100%
