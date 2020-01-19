@@ -39,7 +39,6 @@ import {
   CheckboxGroup,
   Upload
 } from 'element-ui'
-
 Vue.use(Button)
 Vue.use(Form)
 Vue.use(FormItem)
