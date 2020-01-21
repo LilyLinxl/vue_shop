@@ -30,3 +30,7 @@ body,
 .btnAdd{
     margin-top:15px;
 }
+.el-cascader-node {
+    height: 23px !important;
+    line-height: 22px !important;
+}

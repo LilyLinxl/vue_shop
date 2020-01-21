@@ -66,7 +66,7 @@ export default {
       myChart.setOption(result)
   },
   methods:{
-
+      
   }
 }
 </script>

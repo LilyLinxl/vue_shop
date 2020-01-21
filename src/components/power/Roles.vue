@@ -47,8 +47,8 @@
       <el-table-column label="角色描述" prop="roleDesc" > </el-table-column>
       <el-table-column label="操作" width="300px">
         <template v-slot="scope">
-            <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
-            <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+            <el-button size="mini" type="primary" icon="el-icon-edit" @click="showEditDialog(scope.row)">编辑</el-button>
+            <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteRole(scope.row.id)">删除</el-button>
             <el-button size="mini" type="warning" icon="el-icon-setting" @click="showSetRightDialog(scope.row)">分配权限</el-button>
         </template>
       </el-table-column>
@@ -66,7 +66,26 @@
           <el-button @click="setRightDialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="allotRights">确 定</el-button>
         </span>
-</el-dialog>
+    </el-dialog>
+<!-- 编辑角色对话框 -->
+    <el-dialog
+    title="编辑角色" :visible.sync="setEditDialogVisible"
+    width="50%" @close="setEditDialogClose">
+      <el-form :model="editForm" ref="editFormRef" :rules="editFormRules">
+        <!-- 角色名称 -->
+        <el-form-item prop="roleName">
+          <el-input v-model="editForm.roleName"></el-input>
+        </el-form-item>
+        <!-- 角色描述 -->
+        <el-form-item prop="roleDesc">
+          <el-input v-model="editForm.roleDesc"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setEditDialogVisible=false">取 消</el-button>
+        <el-button type="primary" @click="editRole">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -83,7 +102,17 @@ export default {
         children: 'children'// 设置通过children属性展示子节点信息
       },
       defKeys: [], // 设置树形控件中默认选中的内容
-      roleId: '' // 保存正在操作的角色id
+      roleId: '', // 保存正在操作的角色id
+      setEditDialogVisible:false,
+      editForm:{
+        role_name:'',
+        role_desc:''
+      },
+      editFormRules:{
+        roleName:[
+          {required:true,message:'请输入角色名称',trigger:'blur'}
+        ]
+      }
     }
   },
   created () {
@@ -141,6 +170,40 @@ export default {
       this.$message.success('分配权限成功')
       this.getRolesList()
       this.setRightDialogVisible = false
+    },
+    async showEditDialog(role){
+      this.roleId = role.id
+      const {data: res}  = await this.$http.get('roles/'+this.roleId)
+      if(res.meta.status!==200) return this.$message.error('角色信息获取失败')
+      this.editForm = res.data
+      this.setEditDialogVisible=true
+    },
+    setEditDialogClose(){
+      this.$refs.editFormRef.resetFields()
+    },
+    editRole(){
+      this.$refs.editFormRef.validate(async valid=>{
+        if(!valid) return
+        const {data: res} = await this.$http.put(`roles/${this.roleId}`,this.editForm)
+        if(res.meta.status!==200) this.$message.error('修改角色失败')
+        this.$message.success('修改角色成功')
+        this.$refs.editFormRef.resetFields()
+        this.getRolesList()
+        this.setEditDialogVisible= false
+      })
+    },
+    async deleteRole(roleId){
+      const confirmResult = await this.$confirm('确认删除该角色吗?','删除提示',{
+        confirmButtonText:'确认',
+        cancelButtonText:'取消',
+        type:'warning'
+      }).catch(err=>err)
+      if(confirmResult!='confirm') return this.$message.info('已取消删除操作')
+      const {data: res} = await  this.$http.delete(`roles/${roleId}`)
+      if(res.meta.status!==200) return this.$message.error('删除失败')
+      this.$message.success('删除成功')
+      this.getRolesList()
+      
     }
   }
 }

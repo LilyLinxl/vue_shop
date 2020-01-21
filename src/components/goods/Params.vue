@@ -352,4 +352,5 @@ export default {
 .input-new-tag {
   width: 120px;
 }
+
 </style>
